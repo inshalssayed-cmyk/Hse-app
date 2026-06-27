@@ -218,6 +218,17 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .action-opt .ao-icon{font-size:22px;display:block;margin-bottom:5px;}
 .action-full{grid-column:1/-1;}
 
+
+.export-card{
+  background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);
+  padding:16px;margin-bottom:18px;
+}
+.export-card h3{font-size:15px;font-weight:800;color:var(--navy);margin-bottom:5px;}
+.export-card p{font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.4;}
+.export-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.export-row .field{margin-bottom:0;}
+@media(max-width:420px){.export-row{grid-template-columns:1fr;}}
+
 /* ── DASHBOARD ── */
 .dash-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
 .stat-card{
@@ -382,8 +393,15 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
         <div class="field"><label>Employee ID / Iqama No. *</label>
           <input type="text" id="f-eid" placeholder="ID or Iqama number" autocomplete="off">
         </div>
-        <div class="field"><label>Company / Contractor *</label>
-          <input type="text" id="f-ecompany" placeholder="Contractor company name" autocomplete="off">
+        <div class="field"><label>Company Category *</label>
+          <select id="f-company-type">
+            <option value="">— Select Category —</option>
+            <option value="Internal">Internal</option>
+            <option value="External">External</option>
+          </select>
+        </div>
+        <div class="field"><label>Company / Contractor Name *</label>
+          <input type="text" id="f-ecompany" placeholder="e.g. Emaar" autocomplete="off">
         </div>
         <div class="field"><label>Job Title</label>
           <input type="text" id="f-ejob" placeholder="e.g. Mason, Electrician, Rigger" autocomplete="off">
@@ -555,6 +573,17 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
       <div class="s-lbl">✅ Approved</div>
     </div>
   </div>
+  <div class="export-card">
+    <h3>📥 Approved Violations Excel Export</h3>
+    <p>Select date range to download weekly or monthly approved violations in one Excel file.</p>
+    <div class="export-row">
+      <div class="field"><label>From Date</label><input type="date" id="exportFrom"></div>
+      <div class="field"><label>To Date</label><input type="date" id="exportTo"></div>
+    </div>
+    <button class="btn-primary btn-gold" style="margin-top:8px;" onclick="downloadApprovedViolationsExcel()">
+      📊 &nbsp;Download Approved Violations Excel
+    </button>
+  </div>
   <div class="section-hd">
     <h2>Violation Notices</h2>
     <p>Tap any record to review and generate</p>
@@ -630,11 +659,12 @@ const SIG_TAHER   = 'iVBORw0KGgoAAAANSUhEUgAAAUAAAABkCAYAAAD32uk+AAAURElEQVR4nO2
 const SIG_ELAH    = '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';
 
 const USERS = [
-  { id:'javed',   name:'Javed Khan',     designation:'HSE INSPECTOR', sig:SIG_JAVED,   sigType:'image/png' },
-  { id:'eslam',   name:'Eslam Mustafa',  designation:'HSE INSPECTOR', sig:SIG_ESLAM,   sigType:'image/png' },
-  { id:'taher',   name:'Mohamed Taher', designation:'HSE INSPECTOR', sig:SIG_TAHER,   sigType:'image/png' },
-  { id:'elah',    name:'Abdul Elah',     designation:'HSE ENGINEER',  sig:SIG_ELAH,    sigType:'image/png' },
-  { id:'youssef', name:'Youssef Mohy',   designation:'HSE SUPERVISOR',sig:SIG_YOUSSEF, sigType:'image/png' }
+  { id:'javed',      name:'Javed Khan',      designation:'HSE INSPECTOR',  sig:SIG_JAVED,   sigType:'image/png' },
+  { id:'taher',      name:'Mohamed Taher',   designation:'HSE INSPECTOR',  sig:SIG_TAHER,   sigType:'image/png' },
+  { id:'youssef',    name:'Youssef Mohy',    designation:'HSE SUPERVISOR', sig:SIG_YOUSSEF, sigType:'image/png' },
+  { id:'ali_asgar',  name:'Ali Asgar',       designation:'HSE INSPECTOR',  sig:SIG_JAVED,   sigType:'image/png' },
+  { id:'akil_ahmed', name:'Akil Ahmed',      designation:'HSE INSPECTOR',  sig:SIG_TAHER,   sigType:'image/png' },
+  { id:'fayyaz_khan',name:'Fayyaz Khan',     designation:'HSE INSPECTOR',  sig:SIG_YOUSSEF, sigType:'image/png' }
 ];
 
 // ═══════════════════════════════════════════════════
@@ -791,6 +821,8 @@ function startForm() {
     document.getElementById(id).value='';
   });
   document.getElementById('f-type').value='';
+  const companyTypeEl = document.getElementById('f-company-type');
+  if(companyTypeEl) companyTypeEl.value='';
   document.getElementById('disp-name').textContent = currentUser.name;
   document.getElementById('disp-desig').textContent = currentUser.designation;
   document.getElementById('disp-sig').src = 'data:'+currentUser.sigType+';base64,'+currentUser.sig;
@@ -829,6 +861,7 @@ function validateStep(n) {
   if(n===1) {
     if(!document.getElementById('f-ename').value.trim()) {showToast('⚠️ Enter employee name');return false;}
     if(!document.getElementById('f-eid').value.trim()) {showToast('⚠️ Enter Employee ID / Iqama');return false;}
+    if(!document.getElementById('f-company-type').value) {showToast('⚠️ Select Internal or External');return false;}
     if(!document.getElementById('f-ecompany').value.trim()) {showToast('⚠️ Enter company name');return false;}
   }
   if(n===2) {
@@ -839,10 +872,16 @@ function validateStep(n) {
   return true;
 }
 
+function getCompanyDisplay() {
+  const companyName = (document.getElementById('f-ecompany').value || '').trim();
+  const companyType = document.getElementById('f-company-type').value;
+  return companyType ? `${companyName} (${companyType})` : companyName;
+}
+
 function fillReview() {
   document.getElementById('rv-name').textContent = document.getElementById('f-ename').value;
   document.getElementById('rv-id').textContent = document.getElementById('f-eid').value;
-  document.getElementById('rv-co').textContent = document.getElementById('f-ecompany').value;
+  document.getElementById('rv-co').textContent = getCompanyDisplay();
   document.getElementById('rv-job').textContent = document.getElementById('f-ejob').value||'—';
   document.getElementById('rv-date').textContent = document.getElementById('autoDate').textContent;
   document.getElementById('rv-loc').textContent = document.getElementById('f-loc').value;
@@ -920,7 +959,9 @@ async function submitViolation() {
     status: 'pending',
     employeeName: document.getElementById('f-ename').value.trim(),
     employeeId: document.getElementById('f-eid').value.trim(),
-    company: document.getElementById('f-ecompany').value.trim(),
+    company: getCompanyDisplay(),
+    companyName: document.getElementById('f-ecompany').value.trim(),
+    companyCategory: document.getElementById('f-company-type').value,
     jobTitle: document.getElementById('f-ejob').value.trim(),
     location: document.getElementById('f-loc').value.trim(),
     violationType: document.getElementById('f-type').value,
@@ -973,6 +1014,7 @@ function checkPin() {
 async function loadDashboard() {
   const list = document.getElementById('violList');
   list.innerHTML=`<div class="empty-state"><div class="es-icon">⏳</div><p>Loading...</p></div>`;
+  initExportDates();
   const all = await getViolations();
   const pending = all.filter(v=>v.status==='pending').length;
   const approved = all.filter(v=>v.status==='approved').length;
@@ -1048,6 +1090,96 @@ async function selectAction(el, action) {
   try {
     await updateViolation(currentViolId, {action:action, status:'approved'});
   } catch(e){ showToast('⚠️ Save failed: '+(e.message||'').substring(0,50)); }
+}
+
+
+function initExportDates() {
+  const fromEl = document.getElementById('exportFrom');
+  const toEl = document.getElementById('exportTo');
+  if(!fromEl || !toEl) return;
+  const now = new Date();
+  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+  if(!fromEl.value) fromEl.value = firstDay.toISOString().slice(0,10);
+  if(!toEl.value) toEl.value = now.toISOString().slice(0,10);
+}
+
+function excelSafe(value) {
+  return String(value ?? '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+async function downloadApprovedViolationsExcel() {
+  const fromVal = document.getElementById('exportFrom').value;
+  const toVal = document.getElementById('exportTo').value;
+  if(!fromVal || !toVal) { showToast('⚠️ Select From Date and To Date'); return; }
+
+  const from = new Date(fromVal + 'T00:00:00');
+  const to = new Date(toVal + 'T23:59:59');
+  if(from > to) { showToast('⚠️ From Date cannot be after To Date'); return; }
+
+  const all = await getViolations();
+  const approved = all.filter(v => {
+    const d = new Date(v.submittedAt);
+    return v.status === 'approved' && d >= from && d <= to;
+  });
+
+  if(approved.length === 0) {
+    showToast('No approved violations found for selected dates');
+    return;
+  }
+
+  const rows = approved.map((v, i) => {
+    const submittedBy = USERS.find(u => u.id === v.submittedBy);
+    return `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${excelSafe(formatDate(new Date(v.submittedAt)))}</td>
+        <td>${excelSafe(v.employeeName)}</td>
+        <td>${excelSafe(v.employeeId)}</td>
+        <td>${excelSafe(v.company)}</td>
+        <td>${excelSafe(v.jobTitle || '')}</td>
+        <td>${excelSafe(v.location)}</td>
+        <td>${excelSafe(v.violationType)}</td>
+        <td>${excelSafe(v.description)}</td>
+        <td>${excelSafe(v.action || '')}</td>
+        <td>${excelSafe(v.deductionAmount || '')}</td>
+        <td>${excelSafe(submittedBy ? submittedBy.name : v.submittedBy)}</td>
+        <td>${excelSafe(v.status)}</td>
+      </tr>`;
+  }).join('');
+
+  const excelHtml = `
+    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+    <head><meta charset="UTF-8"></head>
+    <body>
+      <table border="1">
+        <thead>
+          <tr style="font-weight:bold;background:#D9EAF7;">
+            <th>Sr No</th>
+            <th>Violation Date</th>
+            <th>Employee Name</th>
+            <th>Iqama / Employee ID</th>
+            <th>Company / Contractor</th>
+            <th>Job Title</th>
+            <th>Violation Location</th>
+            <th>Type of Violation</th>
+            <th>Description of Violation</th>
+            <th>Action Taken</th>
+            <th>Deduction Amount (SAR)</th>
+            <th>Submitted By</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </body></html>`;
+
+  const blob = new Blob(['\ufeff' + excelHtml], {type:'application/vnd.ms-excel;charset=utf-8'});
+  downloadBlob(blob, `Approved_Violations_${fromVal}_to_${toVal}.xls`);
+  showToast('✅ Excel file downloaded');
 }
 
 async function deleteViolation() {
