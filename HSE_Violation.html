@@ -1318,7 +1318,7 @@ async function buildWordDoc() {
     }
     zip.file('word/_rels/document.xml.rels',rels);
 
-    const singlePageBreak='<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
+    const singlePageBreak='';
     const photosHeader=`<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:after="120"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Lato" w:hAnsi="Lato"/><w:b/><w:sz w:val="24"/></w:rPr><w:t>Evidence Photos</w:t></w:r></w:p>`;
 
     let tableRows='';
